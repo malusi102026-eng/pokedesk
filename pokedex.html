@@ -1,3 +1,8 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pokédex de Campo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Barlow:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap">
@@ -14,7 +19,7 @@
   color-scheme:dark;
 }
 html,body{min-height:100%}
-body{margin:0;background:radial-gradient(circle at 50% 30%,var(--room2),var(--room) 70%);color:var(--panel);font-family:var(--f-body);font-size:15px;padding-inline:16px;padding-block:28px;box-sizing:border-box}
+body{-webkit-tap-highlight-color:transparent;margin:0;background:radial-gradient(circle at 50% 30%,var(--room2),var(--room) 70%);color:var(--panel);font-family:var(--f-body);font-size:15px;padding-inline:max(16px,env(safe-area-inset-left));padding-block:28px;box-sizing:border-box}
 .stage{max-width:960px;margin:0 auto;perspective:1800px}
 .device{display:grid;grid-template-columns:1fr 26px 1fr;align-items:stretch}
 .half{background:linear-gradient(160deg,var(--shell-lt),var(--shell) 40%,var(--shell-dk));border-radius:22px;padding:22px;box-shadow:0 18px 40px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.18), inset 0 -3px 0 rgba(0,0,0,.25);min-width:0}
@@ -27,9 +32,9 @@ body{margin:0;background:radial-gradient(circle at 50% 30%,var(--room2),var(--ro
 .leds{display:flex;gap:6px}
 .leds i{width:10px;height:10px;border-radius:50%;background:var(--brass);opacity:.35}
 .leds i.on{opacity:1;box-shadow:0 0 8px var(--brass)}
-.brand{margin-left:auto;font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:12px;color:var(--brass);text-transform:uppercase}
+.brand{margin-left:auto;white-space:nowrap;font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:12px;color:var(--brass);text-transform:uppercase}
 .bezel{background:var(--panel);border-radius:10px 10px 10px 34px;padding:16px 16px 12px}
-.screen{position:relative;background:var(--screen);border-radius:6px;aspect-ratio:4/3;max-width:100%;overflow:hidden;display:grid;place-items:center;box-shadow:inset 0 0 22px rgba(0,0,0,.9)}
+.screen{touch-action:pan-y;position:relative;background:var(--screen);border-radius:6px;aspect-ratio:4/3;max-width:100%;overflow:hidden;display:grid;place-items:center;box-shadow:inset 0 0 22px rgba(0,0,0,.9)}
 .screen::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);pointer-events:none}
 .scan{position:absolute;left:0;right:0;height:30%;background:linear-gradient(transparent,rgba(159,242,192,.18),transparent);animation:scan 2.8s linear infinite}
 @keyframes scan{from{top:-30%}to{top:100%}}
@@ -40,7 +45,7 @@ canvas{width:62%;height:auto;max-width:100%}
 .status{position:absolute;bottom:8px;right:12px;font-family:var(--f-mono);color:var(--phosphor-dim);font-size:11px}
 .bezel-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--muted);font-family:var(--f-mono);font-size:11px}
 .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center}
-button{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:#123f3c;color:var(--panel);box-shadow:0 3px 0 #0a2624}
+button{min-height:44px;touch-action:manipulation;font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:#123f3c;color:var(--panel);box-shadow:0 3px 0 #0a2624}
 button:active{transform:translateY(2px);box-shadow:0 1px 0 #0a2624}
 button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 button.big{background:var(--brass);color:var(--ink);box-shadow:0 3px 0 #8f6a26;margin-left:auto}
@@ -61,15 +66,47 @@ button.big{background:var(--brass);color:var(--ink);box-shadow:0 3px 0 #8f6a26;m
 .bar{height:8px;background:#cfd8d3;border-radius:4px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--shell);border-radius:4px;transition:width .6s ease}
 .note{max-width:960px;margin:18px auto 0;color:#8ea39b;font-size:12px;text-align:center}
-@media (max-width:720px){
+.swipe{display:none;text-align:center;font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;color:var(--muted);margin:6px 0 0}
+/* Celulares y tabletas: una mitad sobre la otra, sin la apertura en 3D */
+@media (max-width:900px){
+  .stage{max-width:560px}
   .device{grid-template-columns:1fr;gap:0}
   .hinge{height:20px;margin:0 30px;background:repeating-linear-gradient(90deg,var(--shell-dk) 0 30px,#0e3533 30px 34px)}
   .left{border-radius:22px 22px 6px 6px}
-  .right{border-radius:6px 6px 22px 22px;transform-origin:center top;animation-name:openv}
-  @keyframes openv{from{transform:rotateX(160deg)}to{transform:rotateX(0)}}
+  .right{border-radius:6px 6px 22px 22px;animation:rise .6s ease-out both}
+  @keyframes rise{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}
+}
+/* Celulares: márgenes y tamaños más compactos */
+@media (max-width:480px){
+  body{padding-block:max(12px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-bottom))}
+  .half{padding:16px;border-radius:18px}
+  .left{border-radius:18px 18px 6px 6px}
+  .right{border-radius:6px 6px 18px 18px}
+  .hinge{height:16px;margin:0 24px}
+  .top{margin-bottom:12px;gap:10px}
+  .lens{width:38px;height:38px;border-width:3px}
+  .brand{font-size:11px;letter-spacing:.1em}
+  .bezel{padding:10px 10px 8px;border-radius:8px 8px 8px 24px}
+  .controls{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:8px;margin-top:14px}
+  button{padding:10px 6px;font-size:12px;letter-spacing:.04em}
+  button.big{margin-left:0}
+  .readout{padding:14px}
+  .desc{font-size:14px}
+  .measures{gap:8px;margin-top:10px}
+  .m b{font-size:18px}
+  .stats{margin-top:10px;padding:10px}
+  .row{grid-template-columns:70px 30px 1fr;font-size:13px}
+  .note{font-size:11px;padding-inline:8px}
+  .swipe{display:block}
+}
+/* Celular acostado: la pantalla no debe ocupar toda la altura */
+@media (orientation:landscape) and (max-height:500px){
+  .stage{max-width:min(560px,120vh)}
 }
 @media (prefers-reduced-motion:reduce){.right,.scan{animation:none}.bar i{transition:none}}
 </style>
+</head>
+<body>
 
 <div class="stage">
   <div class="device">
@@ -88,6 +125,7 @@ button.big{background:var(--brass);color:var(--ink);box-shadow:0 3px 0 #8f6a26;m
           <span class="status" id="status">ESCANEANDO…</span>
         </div>
         <div class="bezel-foot"><span>REGIÓN KANTO</span><span id="counter">01/13</span></div>
+        <p class="swipe" aria-hidden="true">← desliza para cambiar →</p>
       </div>
       <div class="controls">
         <button id="prev" type="button" aria-label="Anterior">◀ Ant.</button>
@@ -215,6 +253,16 @@ function showImage(p){
 $("prev").onclick=()=>{idx=(idx-1+DEX.length)%DEX.length;render();};
 $("next").onclick=()=>{idx=(idx+1)%DEX.length;render();};
 $("rand").onclick=()=>{let n;do{n=Math.floor(Math.random()*DEX.length);}while(n===idx);idx=n;render();};
+/* Deslizar el dedo sobre la pantalla: izquierda = siguiente, derecha = anterior */
+(()=>{ const scr=document.querySelector(".screen"); let x0=null,y0=null;
+  scr.addEventListener("touchstart",e=>{ x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
+  scr.addEventListener("touchend",e=>{ if(x0===null) return;
+    const dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0; x0=null;
+    if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)*1.5) (dx<0?$("next"):$("prev")).click(); },{passive:true});
+})();
 document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")$("prev").click();if(e.key==="ArrowRight")$("next").click();});
 render();
 </script>
+
+</body>
+</html>
