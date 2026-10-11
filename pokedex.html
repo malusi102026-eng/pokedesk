@@ -1,0 +1,220 @@
+<title>Pokédex de Campo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Barlow:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: dispositivo de campo con bisagra central — panel izq. = visor, panel der. = ficha técnica */
+:root{
+  --room:#1b2226; --room2:#263036;
+  --shell:#1f6f6a; --shell-dk:#154d4a; --shell-lt:#2f8f88;
+  --brass:#d9a441; --screen:#0f1d17; --phosphor:#9ff2c0; --phosphor-dim:#4f8f6a;
+  --panel:#e9efe9; --ink:#17201d; --muted:#5d6b66;
+  --f-display:"Chakra Petch", "Trebuchet MS", sans-serif;
+  --f-body:"Barlow", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme:dark;
+}
+html,body{min-height:100%}
+body{margin:0;background:radial-gradient(circle at 50% 30%,var(--room2),var(--room) 70%);color:var(--panel);font-family:var(--f-body);font-size:15px;padding-inline:16px;padding-block:28px;box-sizing:border-box}
+.stage{max-width:960px;margin:0 auto;perspective:1800px}
+.device{display:grid;grid-template-columns:1fr 26px 1fr;align-items:stretch}
+.half{background:linear-gradient(160deg,var(--shell-lt),var(--shell) 40%,var(--shell-dk));border-radius:22px;padding:22px;box-shadow:0 18px 40px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.18), inset 0 -3px 0 rgba(0,0,0,.25);min-width:0}
+.left{border-top-right-radius:6px;border-bottom-right-radius:6px}
+.right{border-top-left-radius:6px;border-bottom-left-radius:6px;transform-origin:left center;animation:open 1.1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes open{from{transform:rotateY(-160deg)}to{transform:rotateY(0)}}
+.hinge{background:repeating-linear-gradient(180deg,var(--shell-dk) 0 30px,#0e3533 30px 34px);border-radius:8px;margin-block:30px;box-shadow:inset 3px 0 6px rgba(0,0,0,.4)}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.lens{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e8fbff,#58c6e6 35%,#14607a);border:4px solid var(--panel);box-shadow:0 0 14px rgba(88,198,230,.6)}
+.leds{display:flex;gap:6px}
+.leds i{width:10px;height:10px;border-radius:50%;background:var(--brass);opacity:.35}
+.leds i.on{opacity:1;box-shadow:0 0 8px var(--brass)}
+.brand{margin-left:auto;font-family:var(--f-display);font-weight:700;letter-spacing:.14em;font-size:12px;color:var(--brass);text-transform:uppercase}
+.bezel{background:var(--panel);border-radius:10px 10px 10px 34px;padding:16px 16px 12px}
+.screen{position:relative;background:var(--screen);border-radius:6px;aspect-ratio:4/3;max-width:100%;overflow:hidden;display:grid;place-items:center;box-shadow:inset 0 0 22px rgba(0,0,0,.9)}
+.screen::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);pointer-events:none}
+.scan{position:absolute;left:0;right:0;height:30%;background:linear-gradient(transparent,rgba(159,242,192,.18),transparent);animation:scan 2.8s linear infinite}
+@keyframes scan{from{top:-30%}to{top:100%}}
+canvas{width:62%;height:auto;max-width:100%}
+.art{width:70%;height:80%;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 0 12px rgba(159,242,192,.35))}
+.src{font-family:var(--f-mono);font-size:10px;color:var(--muted);margin:8px 0 0}
+.dex-no{position:absolute;top:8px;left:12px;font-family:var(--f-mono);color:var(--phosphor);font-size:13px;letter-spacing:.08em}
+.status{position:absolute;bottom:8px;right:12px;font-family:var(--f-mono);color:var(--phosphor-dim);font-size:11px}
+.bezel-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--muted);font-family:var(--f-mono);font-size:11px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center}
+button{font-family:var(--f-display);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:#123f3c;color:var(--panel);box-shadow:0 3px 0 #0a2624}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #0a2624}
+button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+button.big{background:var(--brass);color:var(--ink);box-shadow:0 3px 0 #8f6a26;margin-left:auto}
+.readout{background:var(--screen);border-radius:8px;padding:16px;color:var(--phosphor);box-shadow:inset 0 0 14px rgba(0,0,0,.8)}
+.name{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,4vw,36px);margin:0;letter-spacing:.03em;text-wrap:balance}
+.cat{margin:2px 0 10px;color:var(--phosphor-dim);font-family:var(--f-mono);font-size:12px}
+.types{display:flex;gap:6px;flex-wrap:wrap}
+.type{font-family:var(--f-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:999px;color:#0c1512}
+.desc{margin:12px 0 0;line-height:1.5;color:var(--panel);font-size:14px;max-width:60ch}
+.measures{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.m{background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 12px}
+.m small{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.m b{font-family:var(--f-display);font-size:20px;font-variant-numeric:tabular-nums}
+.stats{margin-top:14px;background:var(--panel);color:var(--ink);border-radius:8px;padding:12px}
+.stats h2{margin:0 0 8px;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;justify-content:space-between}
+.row{display:grid;grid-template-columns:76px 34px 1fr;gap:8px;align-items:center;font-size:13px;margin-block:4px}
+.row span:nth-child(2){font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.bar{height:8px;background:#cfd8d3;border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--shell);border-radius:4px;transition:width .6s ease}
+.note{max-width:960px;margin:18px auto 0;color:#8ea39b;font-size:12px;text-align:center}
+@media (max-width:720px){
+  .device{grid-template-columns:1fr;gap:0}
+  .hinge{height:20px;margin:0 30px;background:repeating-linear-gradient(90deg,var(--shell-dk) 0 30px,#0e3533 30px 34px)}
+  .left{border-radius:22px 22px 6px 6px}
+  .right{border-radius:6px 6px 22px 22px;transform-origin:center top;animation-name:openv}
+  @keyframes openv{from{transform:rotateX(160deg)}to{transform:rotateX(0)}}
+}
+@media (prefers-reduced-motion:reduce){.right,.scan{animation:none}.bar i{transition:none}}
+</style>
+
+<div class="stage">
+  <div class="device">
+    <section class="half left" aria-label="Visor">
+      <div class="top">
+        <div class="lens" aria-hidden="true"></div>
+        <div class="leds" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+        <span class="brand">Pokédex · Campo</span>
+      </div>
+      <div class="bezel">
+        <div class="screen">
+          <div class="scan" aria-hidden="true"></div>
+          <span class="dex-no" id="dexNo">Nº 000</span>
+          <img id="art" class="art" alt="" hidden>
+          <canvas id="emblem" width="300" height="300" aria-label="Radar de estadísticas (se muestra cuando no hay imagen)"></canvas>
+          <span class="status" id="status">ESCANEANDO…</span>
+        </div>
+        <div class="bezel-foot"><span>REGIÓN KANTO</span><span id="counter">01/13</span></div>
+      </div>
+      <div class="controls">
+        <button id="prev" type="button" aria-label="Anterior">◀ Ant.</button>
+        <button id="next" type="button" aria-label="Siguiente">Sig. ▶</button>
+        <button id="rand" class="big" type="button">Aleatorio</button>
+      </div>
+    </section>
+
+    <div class="hinge" aria-hidden="true"></div>
+
+    <section class="half right" aria-label="Ficha">
+      <div class="readout">
+        <h1 class="name" id="name">—</h1>
+        <p class="cat" id="cat">—</p>
+        <div class="types" id="types"></div>
+        <p class="desc" id="desc"></p>
+      </div>
+      <div class="measures">
+        <div class="m"><small>Altura</small><b id="height">—</b></div>
+        <div class="m"><small>Peso</small><b id="weight">—</b></div>
+      </div>
+      <div class="stats">
+        <h2><span>Estadísticas base</span><span id="total">Total —</span></h2>
+        <div id="statRows"></div>
+        <p class="src">Estadísticas base oficiales de los juegos (generación actual).</p>
+      </div>
+    </section>
+  </div>
+  <p class="note">Página estática: todos los datos viven dentro del archivo. Cada vez que la abres aparece un Pokémon al azar.</p>
+</div>
+
+<script>
+const TYPES = {
+  planta:"#7fd16b", veneno:"#b98ae0", fuego:"#ff9d5c", agua:"#6fb6ff", eléctrico:"#ffd84a",
+  normal:"#c9c4b0", hada:"#f5a8d4", lucha:"#e07a5f", fantasma:"#9a8ad8", roca:"#c9b26b",
+  tierra:"#d8b47a", dragón:"#8f9cff", volador:"#a9c8ff", psíquico:"#ff8fb1"
+};
+const DEX = [
+  {n:1, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/001.png",
+   name:"Bulbasaur",cat:"Pokémon Semilla",t:["planta","veneno"],h:0.7,w:6.9,s:[45,49,49,65,65,45],d:"Lleva un bulbo en el lomo que absorbe la luz del sol. Cuanto más luz recibe, más crece."},
+  {n:4, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/004.png",
+   name:"Charmander",cat:"Pokémon Lagartija",t:["fuego"],h:0.6,w:8.5,s:[39,52,43,60,50,65],d:"La llama de su cola refleja su estado de ánimo y su salud. Si se apaga, es mala señal."},
+  {n:7, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/007.png",
+   name:"Squirtle",cat:"Pokémon Tortuguita",t:["agua"],h:0.5,w:9.0,s:[44,48,65,50,64,43],d:"Se refugia en su caparazón para protegerse y lanza chorros de agua a presión."},
+  {n:25, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/021.png",
+   name:"Pikachu",cat:"Pokémon Ratón",t:["eléctrico"],h:0.4,w:6.0,s:[35,55,40,50,50,90],d:"Acumula electricidad en las bolsas de sus mejillas y la descarga cuando se siente amenazado."},
+  {n:39, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/039.png",
+   name:"Jigglypuff",cat:"Pokémon Globo",t:["normal","hada"],h:0.5,w:5.5,s:[115,45,20,45,25,20],d:"Su canto adormece a quien lo escucha. Se infla como un globo para cantar más tiempo."},
+  {n:54, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/054.png",
+   name:"Psyduck",cat:"Pokémon Pato",t:["agua"],h:0.8,w:19.6,s:[50,52,48,65,50,55],d:"Sufre dolores de cabeza constantes. Cuando empeoran, libera poderes que no recuerda después."},
+  {n:66, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/066.png",
+   name:"Machop",cat:"Pokémon Superpoder",t:["lucha"],h:0.8,w:19.5,s:[70,80,50,35,35,35],d:"Entrena todo el día levantando objetos pesados. Su cuerpo es puro músculo."},
+  {n:92, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/092.png",
+   name:"Gastly",cat:"Pokémon Gas",t:["fantasma","veneno"],h:1.3,w:0.1,s:[30,35,30,100,35,80],d:"Su cuerpo es casi todo gas. Un viento fuerte basta para dispersarlo."},
+  {n:95, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/095.png",
+   name:"Onix",cat:"Pokémon Serpiente Roca",t:["roca","tierra"],h:8.8,w:210.0,s:[35,45,160,30,45,70],d:"Excava túneles bajo tierra a gran velocidad. Su cuerpo de roca se endurece con los años."},
+  {n:133, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/133.png",
+   name:"Eevee",cat:"Pokémon Evolución",t:["normal"],h:0.3,w:6.5,s:[55,55,50,45,65,55],d:"Su código genético es inestable, por lo que puede evolucionar de muchas formas distintas."},
+  {n:143, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/143.png",
+   name:"Snorlax",cat:"Pokémon Dormir",t:["normal"],h:2.1,w:460.0,s:[160,110,65,65,110,30],d:"Solo despierta para comer. Después de comer, vuelve a dormirse de inmediato."},
+  {n:149, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/149.png",
+   name:"Dragonite",cat:"Pokémon Dragón",t:["dragón","volador"],h:2.2,w:210.0,s:[91,134,95,100,100,80],d:"Puede rodear el planeta en pocas horas. Se dice que ayuda a los náufragos."},
+  {n:150, img:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/150.png",
+   name:"Mewtwo",cat:"Pokémon Genético",t:["psíquico"],h:2.0,w:122.0,s:[106,110,90,154,90,130],d:"Fue creado mediante manipulación genética. Tiene un poder psíquico enorme."}
+];
+const LABELS = ["PS","Ataque","Defensa","At. Esp.","Def. Esp.","Velocidad"];
+let idx = Math.floor(Math.random()*DEX.length);
+
+const $ = id => document.getElementById(id);
+const fmt = (v,u) => v.toLocaleString("es-CO",{minimumFractionDigits:1,maximumFractionDigits:1})+" "+u;
+
+function drawEmblem(p){
+  const c=$("emblem"), x=c.getContext("2d"), W=c.width, cx=W/2;
+  x.clearRect(0,0,W,W);
+  const col1=TYPES[p.t[0]], col2=TYPES[p.t[1]]||col1;
+  // anillos de radar
+  x.strokeStyle="rgba(159,242,192,.25)"; x.lineWidth=1;
+  for(let r=40;r<=140;r+=25){x.beginPath();x.arc(cx,cx,r,0,Math.PI*2);x.stroke();}
+  // polígono de estadísticas (radar)
+  const max=160;
+  x.beginPath();
+  p.s.forEach((v,i)=>{const a=-Math.PI/2+i*Math.PI/3, r=30+110*Math.min(v,max)/max;
+    const px=cx+Math.cos(a)*r, py=cx+Math.sin(a)*r; i?x.lineTo(px,py):x.moveTo(px,py);});
+  x.closePath();
+  const g=x.createLinearGradient(0,0,W,W); g.addColorStop(0,col1); g.addColorStop(1,col2);
+  x.globalAlpha=.35; x.fillStyle=g; x.fill(); x.globalAlpha=1;
+  x.strokeStyle=col1; x.lineWidth=2.5; x.stroke();
+  // ejes
+  x.fillStyle="#9ff2c0"; x.font="bold 13px JetBrains Mono, monospace"; x.textAlign="center";
+  ["PS","ATQ","DEF","AESP","DESP","VEL"].forEach((l,i)=>{const a=-Math.PI/2+i*Math.PI/3;
+    x.fillText(l,cx+Math.cos(a)*150*0.95,cx+Math.sin(a)*145+4);});
+}
+
+function render(){
+  const p=DEX[idx];
+  $("dexNo").textContent="Nº "+String(p.n).padStart(3,"0");
+  $("counter").textContent=String(idx+1).padStart(2,"0")+"/"+DEX.length;
+  $("name").textContent=p.name;
+  $("cat").textContent=p.cat;
+  $("types").innerHTML=p.t.map(t=>`<span class="type" style="background:${TYPES[t]}">${t}</span>`).join("");
+  $("desc").textContent=p.d;
+  $("height").textContent=fmt(p.h,"m");
+  $("weight").textContent=fmt(p.w,"kg");
+  $("total").textContent="Total "+p.s.reduce((a,b)=>a+b,0);
+  $("statRows").innerHTML=p.s.map((v,i)=>`<div class="row"><span>${LABELS[i]}</span><span>${v}</span><div class="bar"><i style="width:${Math.min(100,v/180*100)}%"></i></div></div>`).join("");
+  drawEmblem(p);
+  showImage(p);
+  $("status").textContent="ESCANEANDO…";
+  setTimeout(()=>{$("status").textContent="REGISTRO OK";},700);
+  document.querySelectorAll(".leds i").forEach((l,i)=>l.classList.toggle("on",i<=idx%3));
+}
+/* ---------- Imagen de cada Pokémon ----------
+   Pega el enlace de la imagen en el campo img:"" de cada Pokémon en DEX.
+   Si img está vacío o el enlace no carga, se muestra el radar de estadísticas. */
+function showImage(p){
+  const art=$("art"), cv=$("emblem"), want=idx;
+  art.hidden=true; cv.hidden=false; art.removeAttribute("src");
+  if(!p.img) return;
+  art.onload=()=>{ if(want===idx){ art.hidden=false; cv.hidden=true; } };
+  art.onerror=()=>{ if(want===idx){ art.hidden=true; cv.hidden=false; } };
+  art.alt=p.name;
+  art.src=p.img;
+}
+
+$("prev").onclick=()=>{idx=(idx-1+DEX.length)%DEX.length;render();};
+$("next").onclick=()=>{idx=(idx+1)%DEX.length;render();};
+$("rand").onclick=()=>{let n;do{n=Math.floor(Math.random()*DEX.length);}while(n===idx);idx=n;render();};
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")$("prev").click();if(e.key==="ArrowRight")$("next").click();});
+render();
+</script>
